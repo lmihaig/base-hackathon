@@ -4,7 +4,7 @@ from .cat import api as cat_api
 from .dog import api as dog_api
 
 api = Api(
-    title="Zoo API",
+    title="Pets API",
     version="1.0",
     description="A simple demo API",
 )
