@@ -13,7 +13,7 @@ collection = db["dogs"]
 router = APIRouter()
 
 
-@router.post("/", response_description="Add new dog", response_model=DogModel)
+@router.post("/dogs", response_description="Add new dog", response_model=DogModel)
 async def create_dog(dog: DogModel = Body(...)):
     dog = jsonable_encoder(dog)
     new_dog = await collection.insert_one(dog)
@@ -21,13 +21,15 @@ async def create_dog(dog: DogModel = Body(...)):
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=created_dog)
 
 
-@router.get("/", response_description="List all dogs", response_model=List[DogModel])
+@router.get("/dogs", response_description="List all dogs", response_model=List[DogModel])
 async def list_dogs():
     dogs = await collection.find().to_list(1000)
     return dogs
 
 
-@router.get("/{id}", response_description="Get a single dog", response_model=DogModel)
+@router.get(
+    "/dogs/{id}", response_description="Get a single dog", response_model=DogModel
+)
 async def show_dog(id: str):
     if (dog := await collection.find_one({"_id": id})) is not None:
         return dog
@@ -35,7 +37,7 @@ async def show_dog(id: str):
     raise HTTPException(status_code=404, detail=f"Dog {id} not found")
 
 
-@router.put("/{id}", response_description="Update a dog", response_model=DogModel)
+@router.put("/dogs/{id}", response_description="Update a dog", response_model=DogModel)
 async def update_dog(id: str, dog: UpdateDogModel = Body(...)):
     dog = {k: v for k, v in dog.dict().items() if v is not None}
 
@@ -52,7 +54,7 @@ async def update_dog(id: str, dog: UpdateDogModel = Body(...)):
     raise HTTPException(status_code=404, detail=f"Dog {id} not found")
 
 
-@router.delete("/{id}", response_description="Delete a dog")
+@router.delete("/dogs/{id}", response_description="Delete a dog")
 async def delete_dog(id: str):
     delete_result = await collection.delete_one({"_id": id})
 
